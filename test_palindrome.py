@@ -11,7 +11,7 @@ def test_palindrome():
         True
         >>> isPalindrome('baa')
         False
-        >>> isPalindrome('MaDaM!!')
+        >>> isPalindrome('RMaDaM!!')
         True
         >>> isPalindrome('baaRb')
         False
