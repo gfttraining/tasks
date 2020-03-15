@@ -1,0 +1,14 @@
+version: '3.3'
+
+services:
+  jenkins:
+    image: prajc3/jenkins-docker
+    volumes:
+     - /var/lib/jenkins:/var/lib/jenkins
+     - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+     - "8081:8080"
+
+  palindrome:
+    image: prajc3/palindrome
+
