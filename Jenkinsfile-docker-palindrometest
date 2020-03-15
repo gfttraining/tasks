@@ -25,7 +25,7 @@ pipeline {
    steps {
     echo "Creating container from the image build in the prevous step"
     sh """
-    docker run -t --name palindrome-${env.BUILD_ID} prajc3/palindrome
+    docker run -t --name palindrome-${env.BUILD_ID} prajc3/palindrome 'eYe'
     """
    }
   }

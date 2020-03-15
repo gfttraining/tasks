@@ -23,9 +23,9 @@ def test_palindrome():
         True
         >>> isPalindrome('ab'*2)
         False
-        >>> x = 'ab' *2**28
+        >>> x = 'ab' *2**20
         >>> len(x)
-        536870912
+        2097152
         >>> xreversed = x[::-1]
         >>> isPalindrome(x+xreversed)
         True
