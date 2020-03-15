@@ -1,0 +1,66 @@
+pipeline {
+ environment {
+  registryCredential = "dockerhub"
+ }
+ agent any
+ stages {
+  stage("Set Build Name") {
+   steps {
+    echo "Setting the build name"
+    script {
+     currentBuild.displayName = "Palindrome-${env.BUILD_ID}"
+    }
+   }
+  }
+  stage("Build") {
+   steps {
+    echo "Building Docker Image"
+    script {
+     dockerImage = docker.build("prajc3/palindrome", '-f ./Dockerfile .')
+    }
+   }
+  }
+
+  stage('Run Tests') {
+   steps {
+    echo "Creating container from the image build in the prevous step"
+    sh """
+    docker run -t --name palindrome-${env.BUILD_ID} prajc3/palindrome
+    """
+   }
+  }
+
+  stage('Validate') {
+   steps {
+    echo "Validating the tests"
+    sh """
+    docker logs palindrome-${env.BUILD_ID} > /tmp/palindrome.log
+    grep -q "Test passed" /tmp/palindrome.log && echo "Test Successful" || echo "Test Failed"
+    grep -q "Test passed" /tmp/palindrome.log && exit 0 || exit 1 
+    """
+   }
+  }
+
+  stage('Publish') {
+   steps {
+    echo "Publishing the Docker Image to Docker Hub"
+    script {
+     docker.withRegistry('', registryCredential) {
+      sh "docker push prajc3/palindrome"
+     }
+    }
+   }
+  }
+
+ }
+ post {
+  always {
+   echo "Delete Workspace and Remove Docker Image"
+   deleteDir()
+   sh """
+   docker rm palindrome-${env.BUILD_ID}
+   docker rmi prajc3/palindrome
+   """
+  }
+ }
+}

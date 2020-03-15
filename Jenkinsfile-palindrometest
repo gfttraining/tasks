@@ -1,0 +1,35 @@
+pipeline {
+ agent any
+ stages {
+  stage("Set Build Name") {
+   steps {
+    echo "Setting the build name"
+    script {
+     currentBuild.displayName = "Palindrome-${env.BUILD_ID}"
+    }
+   }
+  }
+  stage("Execute Application Tests") {
+   steps {
+    echo "Executing the Application"
+	  sh "python test_palindrome.py 'eYe' > /tmp/palindrome.log"
+   }
+  }
+
+  stage('Validate') {
+   steps {
+    echo "Validating the tests"
+    sh """
+    grep -q "Test passed" /tmp/palindrome.log && echo "Test Successful" || echo "Test Failed"
+    grep -q "Test passed" /tmp/palindrome.log && exit 0 || exit 1 
+    """
+   }
+  }
+ }
+ post {
+  always {
+   echo "Delete Workspace"
+   deleteDir()
+  }
+ }
+}
